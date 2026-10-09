@@ -92,7 +92,7 @@
                     android:textColor="@color/white"
                     android:textSize="13sp"
                     android:fontFamily="monospace"
-                    android:text="fast-production-b6e1.up.railway.app" />
+                    android:hint="Paste config or enter domain" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -111,7 +111,7 @@
                     android:textColor="@color/white"
                     android:textSize="12sp"
                     android:fontFamily="monospace"
-                    android:text="94064ba0-3b8d-4fc7-a2d3-7dcc5412b74a" />
+                    android:hint="UUID (auto-filled on paste)" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -140,7 +140,7 @@
                             android:textColor="@color/white"
                             android:textSize="12sp"
                             android:fontFamily="monospace"
-                            android:text="/ws/94064ba0-3b8d-4fc7-a2d3-7dcc5412b74a" />
+                            android:hint="/ws or /" />
                     </LinearLayout>
 
                     <LinearLayout

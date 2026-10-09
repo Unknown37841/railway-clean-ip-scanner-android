@@ -11,7 +11,7 @@ data class VlessConfig(
     val path: String = "/",
     val security: String = "tls",
     val type: String = "ws",
-    val name: String = "Railway Clean IP"
+    val name: String = "Clean Railway"
 )
 
 object VlessConfigParser {
@@ -45,7 +45,7 @@ object VlessConfigParser {
             var sni = address
             var security = "tls"
             var type = "ws"
-            var name = "Railway Clean IP"
+            var name = "Clean Railway"
 
             if (hashIndex != -1) {
                 name = URLDecoder.decode(rest.substring(hashIndex + 1), "UTF-8")
@@ -88,9 +88,12 @@ object VlessConfigParser {
         }
     }
 
-    fun buildConfigLink(baseConfig: VlessConfig, newIp: String, rank: Int, delayMs: Long): String {
+    /**
+     * Preserves exact original config name without adding ping or rank suffixes.
+     */
+    fun buildConfigLink(baseConfig: VlessConfig, newIp: String): String {
         val encodedPath = Uri.encode(baseConfig.path)
-        val serverName = Uri.encode("${baseConfig.name} - #$rank [${delayMs}ms]")
+        val serverName = Uri.encode(baseConfig.name)
         return "vless://${baseConfig.uuid}@$newIp:${baseConfig.port}?path=$encodedPath&security=${baseConfig.security}&encryption=none&host=${baseConfig.domain}&type=${baseConfig.type}&sni=${baseConfig.domain}#$serverName"
     }
 }

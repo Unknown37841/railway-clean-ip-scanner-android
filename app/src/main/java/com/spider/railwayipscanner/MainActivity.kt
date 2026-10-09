@@ -51,24 +51,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadSavedConfig() {
-        val savedDomain = prefs.getString("domain", "fast-production-b6e1.up.railway.app")
-        val savedUuid = prefs.getString("uuid", "94064ba0-3b8d-4fc7-a2d3-7dcc5412b74a")
-        val savedPath = prefs.getString("path", "/ws/94064ba0-3b8d-4fc7-a2d3-7dcc5412b74a")
-        val savedSubnet = prefs.getString("subnet", "69.46.46.")
+        val savedDomain = prefs.getString("domain", "") ?: ""
+        val savedUuid = prefs.getString("uuid", "") ?: ""
+        val savedPath = prefs.getString("path", "") ?: ""
+        val savedSubnet = prefs.getString("subnet", "69.46.46.") ?: "69.46.46."
+        val savedName = prefs.getString("name", "Clean Railway") ?: "Clean Railway"
 
         binding.etDomain.setText(savedDomain)
         binding.etUuid.setText(savedUuid)
         binding.etPath.setText(savedPath)
         binding.etSubnet.setText(savedSubnet)
+
+        if (savedDomain.isNotEmpty() && savedUuid.isNotEmpty()) {
+            currentParsedConfig = VlessConfig(
+                uuid = savedUuid,
+                address = savedDomain,
+                port = 443,
+                domain = savedDomain,
+                path = if (savedPath.isNotEmpty()) savedPath else "/",
+                name = savedName
+            )
+        }
     }
 
-    private fun saveCurrentInputs() {
-        prefs.edit()
+    private fun saveCurrentInputs(configName: String? = null) {
+        val editor = prefs.edit()
             .putString("domain", binding.etDomain.text.toString().trim())
             .putString("uuid", binding.etUuid.text.toString().trim())
             .putString("path", binding.etPath.text.toString().trim())
             .putString("subnet", binding.etSubnet.text.toString().trim())
-            .apply()
+        if (!configName.isNullOrEmpty()) {
+            editor.putString("name", configName)
+        }
+        editor.apply()
     }
 
     private fun setupRecyclerView() {
@@ -136,7 +151,7 @@ class MainActivity : AppCompatActivity() {
                     binding.etDomain.setText(parsed.domain)
                     binding.etUuid.setText(parsed.uuid)
                     binding.etPath.setText(parsed.path)
-                    saveCurrentInputs()
+                    saveCurrentInputs(parsed.name)
                     Toast.makeText(this, "✅ Parsed VLESS: ${parsed.name}", Toast.LENGTH_LONG).show()
                     return
                 }
@@ -160,17 +175,18 @@ class MainActivity : AppCompatActivity() {
             address = domain,
             port = 443,
             domain = domain,
-            path = path,
+            path = if (path.isNotEmpty()) path else "/",
             name = "Clean Railway"
         )
 
         val topClean = resultsList.take(5)
-        val generatedConfigs = topClean.mapIndexed { idx, item ->
-            VlessConfigParser.buildConfigLink(baseConfig, item.ip, idx + 1, item.delayMs)
+        // Keeps original config name exact without modifying or appending ping
+        val generatedConfigs = topClean.map { item ->
+            VlessConfigParser.buildConfigLink(baseConfig, item.ip)
         }.joinToString("\n")
 
         copyToClipboard("Clean VLESS Configs", generatedConfigs)
-        Toast.makeText(this, "📋 5 Clean Configs Copied! Import directly into v2rayNG", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "📋 5 Clean Configs Copied (Names Unchanged)! Import into v2rayNG", Toast.LENGTH_LONG).show()
     }
 
     private fun startScan() {
@@ -180,7 +196,7 @@ class MainActivity : AppCompatActivity() {
         var subnet = binding.etSubnet.text.toString().trim()
 
         if (domain.isEmpty() || uuid.isEmpty()) {
-            Toast.makeText(this, "Please enter Railway Domain & UUID", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Please tap 'Paste VLESS Config' above to load your server!", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -210,7 +226,7 @@ class MainActivity : AppCompatActivity() {
                         ip = ip,
                         domain = domain,
                         uuidString = uuid,
-                        path = path,
+                        path = if (path.isNotEmpty()) path else "/",
                         port = 443,
                         doubleCheck = true
                     )

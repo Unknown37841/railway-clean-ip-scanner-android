@@ -2,7 +2,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/Unknown37841/railway-clean-ip-scanner-android?color=8B5CF6&label=APK%20Download)](https://github.com/Unknown37841/railway-clean-ip-scanner-android/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-### 📲 [📥 Direct APK Download (v1.1.0)](https://github.com/Unknown37841/railway-clean-ip-scanner-android/releases/download/v1.1.0/RailwayIPScanner-v1.1.0.apk)
+### 📲 [📥 Direct APK Download (v1.2.0)](https://github.com/Unknown37841/railway-clean-ip-scanner-android/releases/download/v1.2.0/RailwayIPScanner-v1.2.0.apk)
 
 > An open-source, lightweight Android app to scan and find 100% verified unblocked Railway Anycast clean IPs (69.46.46.1 - 254) in Iran.
 
