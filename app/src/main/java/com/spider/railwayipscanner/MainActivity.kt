@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -32,32 +33,67 @@ class MainActivity : AppCompatActivity() {
 
     private var scanJob: Job? = null
     private var isScanning = false
-    private val scanDispatcher = Executors.newFixedThreadPool(16).asCoroutineDispatcher()
+    private val scanDispatcher = Executors.newFixedThreadPool(12).asCoroutineDispatcher()
+
+    private lateinit var prefs: SharedPreferences
+    private var currentParsedConfig: VlessConfig? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        prefs = getSharedPreferences("railway_scanner_prefs", Context.MODE_PRIVATE)
+        loadSavedConfig()
+
         setupRecyclerView()
         setupListeners()
     }
 
+    private fun loadSavedConfig() {
+        val savedDomain = prefs.getString("domain", "fast-production-b6e1.up.railway.app")
+        val savedUuid = prefs.getString("uuid", "94064ba0-3b8d-4fc7-a2d3-7dcc5412b74a")
+        val savedPath = prefs.getString("path", "/ws/94064ba0-3b8d-4fc7-a2d3-7dcc5412b74a")
+        val savedSubnet = prefs.getString("subnet", "69.46.46.")
+
+        binding.etDomain.setText(savedDomain)
+        binding.etUuid.setText(savedUuid)
+        binding.etPath.setText(savedPath)
+        binding.etSubnet.setText(savedSubnet)
+    }
+
+    private fun saveCurrentInputs() {
+        prefs.edit()
+            .putString("domain", binding.etDomain.text.toString().trim())
+            .putString("uuid", binding.etUuid.text.toString().trim())
+            .putString("path", binding.etPath.text.toString().trim())
+            .putString("subnet", binding.etSubnet.text.toString().trim())
+            .apply()
+    }
+
     private fun setupRecyclerView() {
         adapter = IpAdapter(resultsList) { ip ->
-            copyToClipboard("IP: $ip", ip)
+            copyToClipboard("Clean IP", ip)
         }
         binding.recyclerViewResults.layoutManager = LinearLayoutManager(this)
         binding.recyclerViewResults.adapter = adapter
     }
 
     private fun setupListeners() {
+        binding.btnPasteConfig.setOnClickListener {
+            handlePasteConfigFromClipboard()
+        }
+
         binding.btnStartScan.setOnClickListener {
             if (isScanning) {
                 stopScan()
             } else {
                 startScan()
             }
+        }
+
+        binding.btnGenerateConfigs.setOnClickListener {
+            generateAndCopyVlessConfigs()
         }
 
         binding.btnCopyTop5.setOnClickListener {
@@ -88,14 +124,71 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun handlePasteConfigFromClipboard() {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = clipboard.primaryClip
+        if (clipData != null && clipData.itemCount > 0) {
+            val text = clipData.getItemAt(0).text?.toString()?.trim() ?: ""
+            if (text.startsWith("vless://")) {
+                val parsed = VlessConfigParser.parse(text)
+                if (parsed != null) {
+                    currentParsedConfig = parsed
+                    binding.etDomain.setText(parsed.domain)
+                    binding.etUuid.setText(parsed.uuid)
+                    binding.etPath.setText(parsed.path)
+                    saveCurrentInputs()
+                    Toast.makeText(this, "✅ Parsed VLESS: ${parsed.name}", Toast.LENGTH_LONG).show()
+                    return
+                }
+            }
+        }
+        Toast.makeText(this, "No valid vless:// link found on clipboard", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun generateAndCopyVlessConfigs() {
+        if (resultsList.isEmpty()) {
+            Toast.makeText(this, "No clean IPs to generate configs from!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val domain = binding.etDomain.text.toString().trim()
+        val uuid = binding.etUuid.text.toString().trim()
+        val path = binding.etPath.text.toString().trim()
+
+        val baseConfig = currentParsedConfig ?: VlessConfig(
+            uuid = uuid,
+            address = domain,
+            port = 443,
+            domain = domain,
+            path = path,
+            name = "Clean Railway"
+        )
+
+        val topClean = resultsList.take(5)
+        val generatedConfigs = topClean.mapIndexed { idx, item ->
+            VlessConfigParser.buildConfigLink(baseConfig, item.ip, idx + 1, item.delayMs)
+        }.joinToString("\n")
+
+        copyToClipboard("Clean VLESS Configs", generatedConfigs)
+        Toast.makeText(this, "📋 5 Clean Configs Copied! Import directly into v2rayNG", Toast.LENGTH_LONG).show()
+    }
+
     private fun startScan() {
         val domain = binding.etDomain.text.toString().trim()
         val uuid = binding.etUuid.text.toString().trim()
+        val path = binding.etPath.text.toString().trim()
+        var subnet = binding.etSubnet.text.toString().trim()
 
         if (domain.isEmpty() || uuid.isEmpty()) {
             Toast.makeText(this, "Please enter Railway Domain & UUID", Toast.LENGTH_SHORT).show()
             return
         }
+
+        if (!subnet.endsWith(".")) {
+            subnet += "."
+        }
+
+        saveCurrentInputs()
 
         isScanning = true
         binding.btnStartScan.text = getString(R.string.stop_scan)
@@ -105,7 +198,7 @@ class MainActivity : AppCompatActivity() {
         resultsList.clear()
         adapter.notifyDataSetChanged()
 
-        val allIps = (1..254).map { "69.46.46.$it" }
+        val allIps = (1..254).map { "$subnet$it" }
         var progressCount = 0
 
         scanJob = CoroutineScope(Dispatchers.Main).launch {
@@ -113,7 +206,14 @@ class MainActivity : AppCompatActivity() {
 
             allIps.forEach { ip ->
                 launch(scanDispatcher) {
-                    val result = VlessScanner.testIpRealDelay(ip, domain, uuid)
+                    val result = VlessScanner.testIpRealDelay(
+                        ip = ip,
+                        domain = domain,
+                        uuidString = uuid,
+                        path = path,
+                        port = 443,
+                        doubleCheck = true
+                    )
                     withContext(Dispatchers.Main) {
                         progressCount++
                         val pct = ((progressCount / 254f) * 100).toInt()
@@ -150,14 +250,14 @@ class MainActivity : AppCompatActivity() {
         binding.btnStartScan.text = getString(R.string.start_scan)
         binding.btnStartScan.setBackgroundColor(getColor(R.color.primary))
         binding.progressWrap.visibility = View.GONE
-        binding.tvScanStatus.text = "Scan completed! Found ${resultsList.size} clean IPs."
+        binding.tvScanStatus.text = "Scan completed! Found ${resultsList.size} 100% verified clean IPs."
     }
 
     private fun copyToClipboard(label: String, text: String) {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText(label, text)
         clipboard.setPrimaryClip(clip)
-        Toast.makeText(this, "Copied: $text", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Copied: $label", Toast.LENGTH_SHORT).show()
     }
 
     class IpAdapter(

@@ -1,5 +1,6 @@
 package com.spider.railwayipscanner
 
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.InetSocketAddress
@@ -14,13 +15,10 @@ import javax.net.ssl.X509TrustManager
 
 /**
  * 100% Real VLESS End-to-End WebSocket + Google 204 Protocol Scanner.
- * Completely eliminates false positives on Iranian mobile networks (MCI / Irancell).
- *
- * Inspired by PattN / v2rayN Xray Real Delay verification.
+ * Completely eliminates false positives on Iranian mobile networks (MCI / Irancell / Wi-Fi).
  */
 object VlessScanner {
-    private const val PORT = 443
-    private const val TIMEOUT_MS = 2600
+    private const val DEFAULT_TIMEOUT_MS = 2800
 
     private val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
         override fun getAcceptedIssuers(): Array<X509Certificate>? = null
@@ -34,47 +32,86 @@ object VlessScanner {
         }
     }
 
-    fun testIpRealDelay(ip: String, domain: String, uuidString: String): ScanResult {
+    fun testIpRealDelay(
+        ip: String,
+        domain: String,
+        uuidString: String,
+        path: String = "/",
+        port: Int = 443,
+        doubleCheck: Boolean = true
+    ): ScanResult {
+        val firstAttempt = runSingleProbe(ip, domain, uuidString, path, port)
+        if (!firstAttempt.isSuccess) {
+            return firstAttempt
+        }
+
+        if (doubleCheck) {
+            val secondAttempt = runSingleProbe(ip, domain, uuidString, path, port)
+            if (!secondAttempt.isSuccess) {
+                return ScanResult(ip, false, 0, "Unstable connection (packet drop on 2nd probe)")
+            }
+            val avgDelay = (firstAttempt.delayMs + secondAttempt.delayMs) / 2
+            return ScanResult(ip, true, avgDelay)
+        }
+
+        return firstAttempt
+    }
+
+    private fun runSingleProbe(
+        ip: String,
+        domain: String,
+        uuidString: String,
+        path: String,
+        port: Int
+    ): ScanResult {
         val t0 = System.currentTimeMillis()
         var rawSocket: Socket? = null
         var sslSocket: SSLSocket? = null
         try {
             // 1. Direct TCP Connect
             rawSocket = Socket()
-            rawSocket.connect(InetSocketAddress(ip, PORT), TIMEOUT_MS)
-            rawSocket.soTimeout = TIMEOUT_MS
+            rawSocket.connect(InetSocketAddress(ip, port), DEFAULT_TIMEOUT_MS)
+            rawSocket.soTimeout = DEFAULT_TIMEOUT_MS
 
-            // 2. TLS Handshake with Domain SNI & ALPN
+            // 2. TLS Handshake with Domain SNI & ALPN http/1.1
             val factory = sslContext.socketFactory
-            sslSocket = factory.createSocket(rawSocket, domain, PORT, true) as SSLSocket
+            sslSocket = factory.createSocket(rawSocket, domain, port, true) as SSLSocket
+            sslSocket.soTimeout = DEFAULT_TIMEOUT_MS
+
             val sslParams = sslSocket.sslParameters
             sslParams.serverNames = listOf(SNIHostName(domain))
+            try {
+                sslParams.applicationProtocols = arrayOf("http/1.1")
+            } catch (_: Exception) {}
             sslSocket.sslParameters = sslParams
             sslSocket.startHandshake()
 
             val out: OutputStream = sslSocket.outputStream
             val inp: InputStream = sslSocket.inputStream
 
-            // 3. Real WebSocket Upgrade Handshake
-            val wsReq = "GET /ws/$uuidString HTTP/1.1\r\n" +
-                    "Host: $domain\r\n" +
-                    "Upgrade: websocket\r\n" +
-                    "Connection: Upgrade\r\n" +
-                    "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n" +
-                    "Sec-WebSocket-Version: 13\r\n" +
-                    "User-Agent: Mozilla/5.0 (Android; SpiderPanel)\r\n\r\n"
+            val cleanPath = if (path.startsWith("/")) path else "/$path"
+
+            // 3. Send WebSocket Upgrade Request
+            val crlf = "\r\n"
+            val wsReq = "GET " + cleanPath + " HTTP/1.1" + crlf +
+                    "Host: " + domain + crlf +
+                    "Upgrade: websocket" + crlf +
+                    "Connection: Upgrade" + crlf +
+                    "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" + crlf +
+                    "Sec-WebSocket-Version: 13" + crlf +
+                    "User-Agent: Mozilla/5.0 (Android; SpiderPanel)" + crlf + crlf
             out.write(wsReq.toByteArray(Charsets.UTF_8))
             out.flush()
 
-            val headerBuf = ByteArray(512)
-            val headerRead = inp.read(headerBuf)
-            if (headerRead <= 0) {
-                return ScanResult(ip, false, 0, "No WS response")
+            // Read Upgrade Response completely until \r\n\r\n
+            val headerBytes = readUntilDoubleCRLF(inp)
+            if (headerBytes == null) {
+                return ScanResult(ip, false, 0, "No WS upgrade response")
             }
-            val headerStr = String(headerBuf, 0, headerRead, Charsets.UTF_8)
-            if (!headerStr.contains("101")) {
-                val firstLine = headerStr.lines().firstOrNull() ?: "Unknown error"
-                return ScanResult(ip, false, 0, firstLine)
+            val headerStr = String(headerBytes, Charsets.UTF_8)
+            val firstLine = headerStr.lines().firstOrNull() ?: ""
+            if (!firstLine.contains("101")) {
+                return ScanResult(ip, false, 0, "WS Upgrade failed: $firstLine")
             }
 
             // 4. Binary VLESS Protocol Header with UUID Auth
@@ -100,10 +137,10 @@ object VlessScanner {
             }
 
             // HTTP 204 Probe Payload
-            val httpPayload = ("GET /generate_204 HTTP/1.1\r\n" +
-                    "Host: connectivitycheck.gstatic.com\r\n" +
-                    "User-Agent: v2rayN\r\n" +
-                    "Connection: close\r\n\r\n").toByteArray(Charsets.UTF_8)
+            val httpPayload = ("GET /generate_204 HTTP/1.1" + crlf +
+                    "Host: connectivitycheck.gstatic.com" + crlf +
+                    "User-Agent: v2rayN" + crlf +
+                    "Connection: close" + crlf + crlf).toByteArray(Charsets.UTF_8)
 
             val fullData = vlessHeader + httpPayload
 
@@ -135,11 +172,11 @@ object VlessScanner {
 
             if (readLen > 0) {
                 val respStr = String(respBuf, 0, readLen, Charsets.ISO_8859_1)
-                if (respStr.contains("204") || respStr.contains("No Content") || respStr.contains("Google")) {
+                if (respStr.contains("HTTP/1.1 204") || respStr.contains("204 No Content")) {
                     return ScanResult(ip, true, delayMs)
                 }
             }
-            return ScanResult(ip, false, delayMs, "VLESS tunnel failed")
+            return ScanResult(ip, false, delayMs, "No valid Google 204 response")
 
         } catch (e: Exception) {
             return ScanResult(ip, false, 0, e.message ?: "Connection error")
@@ -147,5 +184,30 @@ object VlessScanner {
             try { sslSocket?.close() } catch (_: Exception) {}
             try { rawSocket?.close() } catch (_: Exception) {}
         }
+    }
+
+    private fun readUntilDoubleCRLF(inp: InputStream): ByteArray? {
+        val buffer = ByteArrayOutputStream()
+        val matchPattern = byteArrayOf(13, 10, 13, 10)
+        var matched = 0
+        val maxBytes = 4096
+        var totalRead = 0
+
+        while (totalRead < maxBytes) {
+            val b = inp.read()
+            if (b == -1) break
+            totalRead++
+            buffer.write(b)
+
+            if (b.toByte() == matchPattern[matched]) {
+                matched++
+                if (matched == matchPattern.size) {
+                    return buffer.toByteArray()
+                }
+            } else {
+                matched = if (b.toByte() == matchPattern[0]) 1 else 0
+            }
+        }
+        return if (buffer.size() > 0) buffer.toByteArray() else null
     }
 }

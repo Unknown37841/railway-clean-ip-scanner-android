@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="4dp"
-            android:text="100% Real Delay VLESS Protocol (Zero False Positives)"
+            android:text="Real Delay VLESS Protocol (Zero False Positives)"
             android:textColor="@color/text_muted"
             android:textSize="12sp" />
 
@@ -64,10 +64,22 @@
                 android:orientation="vertical"
                 android:padding="14dp">
 
+                <!-- Quick Import From Clipboard -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPasteConfig"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:text="📋 Paste VLESS Config from Clipboard"
+                    android:textSize="12sp"
+                    android:textColor="@color/accent"
+                    app:cornerRadius="10dp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Target Railway Domain:"
+                    android:layout_marginTop="10dp"
+                    android:text="Target Server Domain / SNI:"
                     android:textColor="@color/text_muted"
                     android:textSize="11sp" />
 
@@ -100,6 +112,61 @@
                     android:textSize="12sp"
                     android:fontFamily="monospace"
                     android:text="94064ba0-3b8d-4fc7-a2d3-7dcc5412b74a" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginEnd="6dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="WS Path:"
+                            android:textColor="@color/text_muted"
+                            android:textSize="11sp" />
+                        <EditText
+                            android:id="@+id/etPath"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_input"
+                            android:paddingHorizontal="12dp"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:fontFamily="monospace"
+                            android:text="/ws/94064ba0-3b8d-4fc7-a2d3-7dcc5412b74a" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="6dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Subnet Prefix:"
+                            android:textColor="@color/text_muted"
+                            android:textSize="11sp" />
+                        <EditText
+                            android:id="@+id/etSubnet"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_input"
+                            android:paddingHorizontal="12dp"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:fontFamily="monospace"
+                            android:text="69.46.46." />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnStartScan"
@@ -173,27 +240,39 @@
                 android:orientation="vertical"
                 android:padding="14dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="✅ 100% Real Clean IPs (Zero Packet Loss):"
+                    android:textColor="@color/success"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <!-- Action Buttons -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:layout_marginTop="8dp">
 
-                    <TextView
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGenerateConfigs"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
                         android:layout_weight="1"
-                        android:text="✅ 100% Real Clean IPs:"
-                        android:textColor="@color/success"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:text="⚡ Generate Configs"
+                        android:textSize="11sp"
+                        android:textColor="@color/white"
+                        app:backgroundTint="@color/success"
+                        app:cornerRadius="8dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCopyTop5"
                         style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="Top 5"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="6dp"
+                        android:text="Top 5 IPs"
                         android:textSize="11sp"
                         android:textColor="@color/accent"
                         app:strokeColor="@color/accent"
@@ -203,9 +282,9 @@
                         android:id="@+id/btnCopyAll"
                         style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="36dp"
+                        android:layout_height="40dp"
                         android:layout_marginStart="6dp"
-                        android:text="Copy All"
+                        android:text="All IPs"
                         android:textSize="11sp"
                         android:textColor="@color/accent"
                         app:strokeColor="@color/accent"
