@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Railway IP Scanner</string>
+    <string name="start_scan">🚀 Start Anycast Scan (254 IPs)</string>
+    <string name="stop_scan">⏹️ Stop Scan</string>
+    <string name="scanning_ips">Scanning 254 Railway Anycast IPs...</string>
+</resources>
