@@ -6,49 +6,59 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:background="@drawable/bg_item_row"
-    android:padding="10dp"
-    android:layout_marginBottom="6dp">
+    android:paddingVertical="10dp"
+    android:paddingHorizontal="12dp"
+    android:layout_marginBottom="8dp">
 
+    <!-- Rank Badge -->
     <TextView
         android:id="@+id/tvRank"
-        android:layout_width="32dp"
+        android:layout_width="34dp"
         android:layout_height="wrap_content"
         android:text="#01"
-        android:textColor="@color/gold"
+        android:textColor="@color/railway_gold"
         android:textSize="12sp"
         android:fontFamily="monospace"
         android:textStyle="bold" />
 
+    <!-- IP Address -->
     <TextView
         android:id="@+id/tvIp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="69.46.46.137"
+        android:text="69.46.46.173"
         android:textColor="@color/white"
         android:textSize="14sp"
         android:fontFamily="monospace"
         android:textStyle="bold" />
 
+    <!-- Ping Delay Chip -->
     <TextView
         android:id="@+id/tvDelay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="240 ms"
+        android:text="210 ms"
         android:textColor="@color/success"
-        android:textSize="12sp"
+        android:textSize="11sp"
         android:fontFamily="monospace"
         android:textStyle="bold"
+        android:background="@drawable/bg_badge_delay"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
         android:layout_marginEnd="10dp" />
 
+    <!-- Copy Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCopyRow"
         style="@style/Widget.Material3.Button.TonalButton"
         android:layout_width="wrap_content"
-        android:layout_height="32dp"
+        android:layout_height="34dp"
         android:text="Copy"
         android:textSize="11sp"
+        android:textStyle="bold"
         android:textColor="@color/accent"
-        app:cornerRadius="6dp" />
+        app:backgroundTint="#241E38"
+        app:cornerRadius="8dp" />
 
 </LinearLayout>

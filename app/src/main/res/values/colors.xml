@@ -1,19 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg">#090D16</color>
-    <color name="card_bg">#111827</color>
-    <color name="card_border">#1F293D</color>
-    <color name="primary">#8B5CF6</color>
+    <!-- Spider & Railway Dark OLED Theme -->
+    <color name="bg">#0A0912</color>
+    <color name="card_bg">#13111E</color>
+    <color name="card_border">#2A2440</color>
+    <color name="card_border_glow">#4C3A7A</color>
+
+    <!-- Brand Accents -->
+    <color name="spider_purple">#8B5CF6</color>
+    <color name="spider_purple_dark">#6D28D9</color>
+    <color name="spider_pink">#EC4899</color>
+    <color name="railway_gold">#F59E0B</color>
+    <color name="railway_amber">#FBBF24</color>
     <color name="accent">#C4B5FD</color>
+    <color name="primary">#7C3AED</color>
+
+    <!-- Status & Feedback -->
     <color name="success">#10B981</color>
-    <color name="gold">#F59E0B</color>
+    <color name="success_bg">#062D20</color>
+    <color name="success_border">#059669</color>
     <color name="danger">#EF4444</color>
+    <color name="gold">#F59E0B</color>
+
+    <!-- Typography -->
     <color name="white">#FFFFFF</color>
     <color name="text_muted">#94A3B8</color>
-    <color name="input_bg">#090E1A</color>
-    <color name="notice_bg">#191712</color>
-    <color name="notice_stroke">#3D2E0B</color>
-    <color name="notice_text">#FDE68A</color>
-    <color name="promo_bg">#14132B</color>
-    <color name="promo_stroke">#2D245A</color>
+    <color name="text_dim">#64748B</color>
+
+    <!-- Input & Elements -->
+    <color name="input_bg">#181528</color>
+    <color name="input_border">#2E274D</color>
+    <color name="input_border_focus">#8B5CF6</color>
+
+    <!-- Badges & Notices -->
+    <color name="notice_bg">#191428</color>
+    <color name="notice_stroke">#3B2A68</color>
+    <color name="notice_text">#DDD6FE</color>
+    <color name="promo_bg">#141126</color>
+    <color name="promo_stroke">#3E2D74</color>
 </resources>

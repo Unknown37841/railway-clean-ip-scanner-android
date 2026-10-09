@@ -4,92 +4,133 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg"
-    android:padding="14dp">
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Header -->
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Top Header & Branding -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="⚡ Railway Clean IP Scanner"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="6dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="4dp"
-            android:text="Real Delay VLESS Protocol (Zero False Positives)"
-            android:textColor="@color/text_muted"
-            android:textSize="12sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🕷️ SPIDER RAILWAY SCANNER ⚡"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.04" />
 
-        <!-- Notice -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Anycast Real Delay VLESS Engine (MCI • Irancell)"
+                android:textColor="@color/accent"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_badge_status"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:text="● Anycast Any-to-Any • Zero False Positives"
+                android:textColor="@color/success"
+                android:textSize="11sp"
+                android:fontFamily="monospace" />
+        </LinearLayout>
+
+        <!-- Direct ISP Notice Banner -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             app:cardBackgroundColor="@color/notice_bg"
             app:strokeColor="@color/notice_stroke"
-            app:strokeWidth="1dp"
-            app:cardCornerRadius="12dp">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:text="⚠️ Turn OFF your VPN before scanning so your direct cellular ISP (MCI/Irancell) connection is tested."
-                android:textColor="@color/notice_text"
-                android:textSize="12sp" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Config Inputs Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:cardBackgroundColor="@color/card_bg"
-            app:strokeColor="@color/card_border"
             app:strokeWidth="1dp"
             app:cardCornerRadius="14dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="14dp">
-
-                <!-- Quick Import From Clipboard -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnPasteConfig"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:text="📋 Paste VLESS Config from Clipboard"
-                    android:textSize="12sp"
-                    android:textColor="@color/accent"
-                    app:cornerRadius="10dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Target Server Domain / SNI:"
+                    android:text="🛡️"
+                    android:textSize="18sp"
+                    android:layout_marginEnd="10dp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Turn OFF your VPN before scanning so your direct cellular network (MCI / Irancell) latency is tested."
+                    android:textColor="@color/notice_text"
+                    android:textSize="11sp"
+                    android:lineSpacingExtra="2dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Config Inputs Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            app:cardBackgroundColor="@color/card_bg"
+            app:strokeColor="@color/card_border"
+            app:strokeWidth="1dp"
+            app:cardCornerRadius="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Quick Paste Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPasteConfig"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="📋 Paste VLESS Config from Clipboard"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@color/spider_purple"
+                    app:cornerRadius="12dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="TARGET DOMAIN / SNI:"
                     android:textColor="@color/text_muted"
-                    android:textSize="11sp" />
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
 
                 <EditText
                     android:id="@+id/etDomain"
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="4dp"
                     android:background="@drawable/bg_input"
-                    android:paddingHorizontal="12dp"
+                    android:paddingHorizontal="14dp"
                     android:textColor="@color/white"
+                    android:textColorHint="@color/text_dim"
                     android:textSize="13sp"
                     android:fontFamily="monospace"
                     android:hint="Paste config or enter domain" />
@@ -97,18 +138,22 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Target UUID:"
+                    android:layout_marginTop="10dp"
+                    android:text="TARGET UUID:"
                     android:textColor="@color/text_muted"
-                    android:textSize="11sp" />
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
 
                 <EditText
                     android:id="@+id/etUuid"
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="4dp"
                     android:background="@drawable/bg_input"
-                    android:paddingHorizontal="12dp"
+                    android:paddingHorizontal="14dp"
                     android:textColor="@color/white"
+                    android:textColorHint="@color/text_dim"
                     android:textSize="12sp"
                     android:fontFamily="monospace"
                     android:hint="UUID (auto-filled on paste)" />
@@ -117,7 +162,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="10dp">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -125,19 +170,25 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:layout_marginEnd="6dp">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="WS Path:"
+                            android:text="WS PATH:"
                             android:textColor="@color/text_muted"
-                            android:textSize="11sp" />
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+
                         <EditText
                             android:id="@+id/etPath"
                             android:layout_width="match_parent"
-                            android:layout_height="44dp"
+                            android:layout_height="46dp"
+                            android:layout_marginTop="4dp"
                             android:background="@drawable/bg_input"
-                            android:paddingHorizontal="12dp"
+                            android:paddingHorizontal="14dp"
                             android:textColor="@color/white"
+                            android:textColorHint="@color/text_dim"
                             android:textSize="12sp"
                             android:fontFamily="monospace"
                             android:hint="/ws or /" />
@@ -149,18 +200,23 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:layout_marginStart="6dp">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Subnet Prefix:"
+                            android:text="SUBNET PREFIX:"
                             android:textColor="@color/text_muted"
-                            android:textSize="11sp" />
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+
                         <EditText
                             android:id="@+id/etSubnet"
                             android:layout_width="match_parent"
-                            android:layout_height="44dp"
+                            android:layout_height="46dp"
+                            android:layout_marginTop="4dp"
                             android:background="@drawable/bg_input"
-                            android:paddingHorizontal="12dp"
+                            android:paddingHorizontal="14dp"
                             android:textColor="@color/white"
                             android:textSize="12sp"
                             android:fontFamily="monospace"
@@ -168,25 +224,27 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <!-- Scan Trigger Button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnStartScan"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="14dp"
-                    android:text="🚀 Start Anycast Scan (254 IPs)"
-                    android:textSize="14sp"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="16dp"
+                    android:text="⚡ START ANYCAST SCAN (254 IPs)"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     android:textColor="@color/white"
-                    app:cornerRadius="12dp"
+                    app:cornerRadius="14dp"
                     app:backgroundTint="@color/primary" />
 
+                <!-- Scanning Progress -->
                 <LinearLayout
                     android:id="@+id/progressWrap"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:visibility="gone"
-                    android:layout_marginTop="12dp">
+                    android:layout_marginTop="14dp">
 
                     <ProgressBar
                         android:id="@+id/progressBar"
@@ -200,108 +258,115 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_marginTop="4dp">
+                        android:layout_marginTop="6dp">
+
                         <TextView
                             android:id="@+id/tvScanStatus"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Scanning..."
+                            android:text="Scanning IPs..."
                             android:textColor="@color/text_muted"
                             android:textSize="11sp" />
+
                         <TextView
                             android:id="@+id/tvScanPct"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0%"
-                            android:textColor="@color/text_muted"
-                            android:textSize="11sp" />
+                            android:textColor="@color/accent"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Results Card -->
+        <!-- Clean Results Card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardResults"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             android:visibility="gone"
             app:cardBackgroundColor="@color/card_bg"
-            app:strokeColor="@color/success"
-            app:strokeWidth="1dp"
-            app:cardCornerRadius="14dp">
+            app:strokeColor="@color/success_border"
+            app:strokeWidth="1.5dp"
+            app:cardCornerRadius="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="14dp">
+                android:padding="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="✅ 100% Real Clean IPs (Zero Packet Loss):"
+                    android:text="✅ 100% VERIFIED CLEAN IPS (ZERO PACKET LOSS)"
                     android:textColor="@color/success"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.04" />
 
-                <!-- Action Buttons -->
+                <!-- Action Buttons Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="10dp">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnGenerateConfigs"
                         android:layout_width="0dp"
-                        android:layout_height="40dp"
+                        android:layout_height="42dp"
                         android:layout_weight="1"
                         android:text="⚡ Generate Configs"
                         android:textSize="11sp"
+                        android:textStyle="bold"
                         android:textColor="@color/white"
                         app:backgroundTint="@color/success"
-                        app:cornerRadius="8dp" />
+                        app:cornerRadius="10dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCopyTop5"
                         style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="40dp"
+                        android:layout_height="42dp"
                         android:layout_marginStart="6dp"
                         android:text="Top 5 IPs"
                         android:textSize="11sp"
+                        android:textStyle="bold"
                         android:textColor="@color/accent"
-                        app:strokeColor="@color/accent"
-                        app:cornerRadius="8dp" />
+                        app:strokeColor="@color/spider_purple"
+                        app:cornerRadius="10dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCopyAll"
                         style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="40dp"
+                        android:layout_height="42dp"
                         android:layout_marginStart="6dp"
                         android:text="All IPs"
                         android:textSize="11sp"
+                        android:textStyle="bold"
                         android:textColor="@color/accent"
-                        app:strokeColor="@color/accent"
-                        app:cornerRadius="8dp" />
+                        app:strokeColor="@color/spider_purple"
+                        app:cornerRadius="10dp" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewResults"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="12dp"
                     android:nestedScrollingEnabled="false" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Bot Promotion Card -->
+        <!-- Spider Panel Promotion Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -309,7 +374,7 @@
             app:cardBackgroundColor="@color/promo_bg"
             app:strokeColor="@color/promo_stroke"
             app:strokeWidth="1dp"
-            app:cardCornerRadius="14dp">
+            app:cardCornerRadius="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -321,7 +386,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="🤖 Spider Panel Telegram Bot"
+                    android:text="🕷️ Spider Panel Network ⚡"
                     android:textColor="@color/accent"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -342,6 +407,7 @@
                     android:text="Open @SpiderPannelBot ↗"
                     android:textSize="12sp"
                     android:textStyle="bold"
+                    android:textColor="@color/white"
                     app:cornerRadius="10dp"
                     app:backgroundTint="@color/primary" />
             </LinearLayout>
