@@ -18,7 +18,7 @@ import javax.net.ssl.X509TrustManager
  * Completely eliminates false positives on Iranian mobile networks (MCI / Irancell / Wi-Fi).
  */
 object VlessScanner {
-    private const val DEFAULT_TIMEOUT_MS = 2800
+    private const val DEFAULT_TIMEOUT_MS = 2400
 
     private val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
         override fun getAcceptedIssuers(): Array<X509Certificate>? = null
@@ -46,11 +46,17 @@ object VlessScanner {
         }
 
         if (doubleCheck) {
+            try { Thread.sleep(60) } catch (_: Exception) {}
             val secondAttempt = runSingleProbe(ip, domain, uuidString, path, port)
             if (!secondAttempt.isSuccess) {
                 return ScanResult(ip, false, 0, "Unstable connection (packet drop on 2nd probe)")
             }
-            val avgDelay = (firstAttempt.delayMs + secondAttempt.delayMs) / 2
+            try { Thread.sleep(60) } catch (_: Exception) {}
+            val thirdAttempt = runSingleProbe(ip, domain, uuidString, path, port)
+            if (!thirdAttempt.isSuccess) {
+                return ScanResult(ip, false, 0, "Unstable connection (packet drop on 3rd probe)")
+            }
+            val avgDelay = (firstAttempt.delayMs + secondAttempt.delayMs + thirdAttempt.delayMs) / 3
             return ScanResult(ip, true, avgDelay)
         }
 
@@ -123,7 +129,7 @@ object VlessScanner {
                 for (i in 8..15) this[i] = ((lsb ushr (8 * (15 - i))) and 0xFF).toByte()
             }
 
-            val targetHost = "connectivitycheck.gstatic.com".toByteArray(Charsets.UTF_8)
+            val targetHost = "www.google.com".toByteArray(Charsets.UTF_8)
             val vlessHeader = ByteArray(1 + 16 + 1 + 1 + 2 + 1 + 1 + targetHost.size).apply {
                 var pos = 0
                 this[pos++] = 0.toByte() // Version 0
@@ -138,7 +144,7 @@ object VlessScanner {
 
             // HTTP 204 Probe Payload
             val httpPayload = ("GET /generate_204 HTTP/1.1" + crlf +
-                    "Host: connectivitycheck.gstatic.com" + crlf +
+                    "Host: www.google.com" + crlf +
                     "User-Agent: v2rayN" + crlf +
                     "Connection: close" + crlf + crlf).toByteArray(Charsets.UTF_8)
 

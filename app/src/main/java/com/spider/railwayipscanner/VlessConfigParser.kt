@@ -92,8 +92,9 @@ object VlessConfigParser {
      * Preserves exact original config name without adding ping or rank suffixes.
      */
     fun buildConfigLink(baseConfig: VlessConfig, newIp: String): String {
-        val encodedPath = Uri.encode(baseConfig.path)
+        val rawPath = if (baseConfig.path.startsWith("/")) baseConfig.path else "/" + baseConfig.path
+        val encodedPath = Uri.encode(rawPath)
         val serverName = Uri.encode(baseConfig.name)
-        return "vless://${baseConfig.uuid}@$newIp:${baseConfig.port}?path=$encodedPath&security=${baseConfig.security}&encryption=none&host=${baseConfig.domain}&type=${baseConfig.type}&sni=${baseConfig.domain}#$serverName"
+        return "vless://${baseConfig.uuid}@$newIp:${baseConfig.port}?encryption=none&security=${baseConfig.security}&sni=${baseConfig.domain}&fp=chrome&alpn=http%2F1.1&type=${baseConfig.type}&host=${baseConfig.domain}&path=$encodedPath#$serverName"
     }
 }
